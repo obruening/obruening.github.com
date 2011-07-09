@@ -1,0 +1,1127 @@
+<html>
+  <head>
+    <link rel="stylesheet"  href="page.css" type="text/css"/>
+  </head>
+  <body>
+    <div class="content">
+      <span class="header">Rails CRUD Example with Knockout.js</span>
+      <p>
+        Source code available at <a href="http://www.github.com/obruening/ajax">github</a>
+      </p>
+    </div>
+    
+      <div class="content">
+        <span class="file_name">app/controllers/posts_controller.rb
+</span>
+        
+        <table cellpadding="0" cellspacing="0">
+  
+    <tr>
+      <td class='comment_block'>
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre><span style="color:#080;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">PostsController</span> &lt; <span style="color:#036;font-weight:bold">ApplicationController</span></pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Return all posts as json.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">index</span>
+    <span style="color:#33B">@posts</span> = <span style="color:#036;font-weight:bold">Post</span>.all
+ 
+    respond_to <span style="color:#080;font-weight:bold">do</span> |format|
+      format.json { render <span style="color:#A60">:json</span> =&gt; <span style="color:#33B">@posts</span> }
+      format.html <span style="color:#888"># index.html.erb</span>
+    <span style="color:#080;font-weight:bold">end</span>
+  <span style="color:#080;font-weight:bold">end</span>
+ </pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    The show action is not used here. A selected record is pulled from the client-side array.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">show</span>
+    <span style="color:#33B">@post</span> = <span style="color:#036;font-weight:bold">Post</span>.find(params[<span style="color:#A60">:id</span>])
+ 
+    respond_to <span style="color:#080;font-weight:bold">do</span> |format|
+      format.html <span style="color:#888"># show.html.erb</span>
+    <span style="color:#080;font-weight:bold">end</span>
+  <span style="color:#080;font-weight:bold">end</span>
+ 
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">new</span>
+    <span style="color:#33B">@post</span> = <span style="color:#036;font-weight:bold">Post</span>.new
+ 
+    respond_to <span style="color:#080;font-weight:bold">do</span> |format|
+      format.html <span style="color:#888"># new.html.erb</span>
+    <span style="color:#080;font-weight:bold">end</span>
+  <span style="color:#080;font-weight:bold">end</span>
+ 
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">edit</span>
+    <span style="color:#33B">@post</span> = <span style="color:#036;font-weight:bold">Post</span>.find(params[<span style="color:#A60">:id</span>])
+  <span style="color:#080;font-weight:bold">end</span>
+ 
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">create</span>
+    <span style="color:#33B">@post</span> = <span style="color:#036;font-weight:bold">Post</span>.new(params[<span style="color:#A60">:post</span>])
+ 
+    respond_to <span style="color:#080;font-weight:bold">do</span> |format|
+      <span style="color:#080;font-weight:bold">if</span> <span style="color:#33B">@post</span>.save
+        format.html { redirect_to(<span style="color:#33B">@post</span>, <span style="color:#A60">:notice</span> =&gt; <span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">Post was successfully created.</span><span style="color:#710">'</span></span>) }</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    After creation, the record is sent back to the browser with its id.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>        format.json { render <span style="color:#A60">:json</span> =&gt; <span style="color:#33B">@post</span>}
+      <span style="color:#080;font-weight:bold">else</span>
+        format.html { render <span style="color:#A60">:action</span> =&gt; <span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">new</span><span style="color:#710">&quot;</span></span> }</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Validation errors are sent back to the browser.
+    Convert errors to an array, because it is easier to handle this way in the error template.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>        format.json { render <span style="color:#A60">:json</span> =&gt; <span style="color:#33B">@post</span>.errors.to_a, <span style="color:#A60">:status</span> =&gt; <span style="color:#A60">:unprocessable_entity</span> }
+      <span style="color:#080;font-weight:bold">end</span>
+    <span style="color:#080;font-weight:bold">end</span>
+  <span style="color:#080;font-weight:bold">end</span>
+ 
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">update</span>
+    <span style="color:#33B">@post</span> = <span style="color:#036;font-weight:bold">Post</span>.find(params[<span style="color:#A60">:id</span>])
+ 
+    respond_to <span style="color:#080;font-weight:bold">do</span> |format|
+      <span style="color:#080;font-weight:bold">if</span> <span style="color:#33B">@post</span>.update_attributes(params[<span style="color:#A60">:post</span>])
+        format.html { redirect_to(<span style="color:#33B">@post</span>, <span style="color:#A60">:notice</span> =&gt; <span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">Post was successfully updated.</span><span style="color:#710">'</span></span>) }</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    The updated record is sent back to the browser.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>        format.json { render <span style="color:#A60">:json</span> =&gt; <span style="color:#33B">@post</span>}
+      <span style="color:#080;font-weight:bold">else</span>
+        format.html { render <span style="color:#A60">:action</span> =&gt; <span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">edit</span><span style="color:#710">&quot;</span></span> }
+        format.json { render <span style="color:#A60">:json</span> =&gt; <span style="color:#33B">@post</span>.errors.to_a, <span style="color:#A60">:status</span> =&gt; <span style="color:#A60">:unprocessable_entity</span> }
+      <span style="color:#080;font-weight:bold">end</span>
+    <span style="color:#080;font-weight:bold">end</span>
+  <span style="color:#080;font-weight:bold">end</span>
+ 
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">destroy</span>
+    <span style="color:#33B">@post</span> = <span style="color:#036;font-weight:bold">Post</span>.find(params[<span style="color:#A60">:id</span>])
+    <span style="color:#33B">@post</span>.destroy
+ 
+    respond_to <span style="color:#080;font-weight:bold">do</span> |format|
+      format.html { redirect_to(posts_url) }</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Convert status to json and send it back.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>      format.json { render <span style="color:#A60">:json</span> =&gt; <span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">ok</span><span style="color:#710">'</span></span>.to_json }
+    <span style="color:#080;font-weight:bold">end</span>
+  <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">end</span></pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+</table>
+      </div>
+    
+      <div class="content">
+        <span class="file_name">app/models/post.rb
+</span>
+        
+        <table cellpadding="0" cellspacing="0">
+  
+    <tr>
+      <td class='comment_block'>
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre><span style="color:#080;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">Post</span> &lt; <span style="color:#036;font-weight:bold">ActiveRecord</span>::<span style="color:#036;font-weight:bold">Base</span></pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Normal active record model.
+    Fields can't be empty.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>   validates <span style="color:#A60">:title</span>, <span style="color:#A60">:presence</span> =&gt; <span style="color:#038;font-weight:bold">true</span>
+   validates <span style="color:#A60">:body</span>, <span style="color:#A60">:presence</span> =&gt; <span style="color:#038;font-weight:bold">true</span>
+<span style="color:#080;font-weight:bold">end</span></pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+</table>
+      </div>
+    
+      <div class="content">
+        <span class="file_name">public/crud.html
+</span>
+        
+        <table cellpadding="0" cellspacing="0">
+  
+    <tr>
+      <td class='comment_block'>
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre><span style="color:#34b">&lt;!DOCTYPE html&gt;</span>
+<span style="color:#070">&lt;html&gt;</span>
+  <span style="color:#070">&lt;head&gt;</span>
+    <span style="color:#070">&lt;title&gt;</span>Rails Knockout Crud Example<span style="color:#070">&lt;/title&gt;</span>
+    <span style="color:#070">&lt;link</span> <span style="color:#007">href</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">/stylesheets/scaffold.css</span><span style="color:#710">&quot;</span></span> <span style="color:#007">media</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">screen</span><span style="color:#710">&quot;</span></span> <span style="color:#007">rel</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">stylesheet</span><span style="color:#710">&quot;</span></span> <span style="color:#007">type</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">text/css</span><span style="color:#710">&quot;</span></span> <span style="color:#070">/&gt;</span>
+    <span style="color:#070">&lt;script</span> <span style="color:#007">src</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">/javascripts/jquery.js</span><span style="color:#710">&quot;</span></span> <span style="color:#007">type</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">text/javascript</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span><span style="color:#070">&lt;/script&gt;</span>
+    <span style="color:#070">&lt;script</span> <span style="color:#007">src</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">/javascripts/jquery.tmpl.js</span><span style="color:#710">&quot;</span></span> <span style="color:#007">type</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">text/javascript</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span><span style="color:#070">&lt;/script&gt;</span>
+    <span style="color:#070">&lt;script</span> <span style="color:#007">src</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">/javascripts/knockout-1.2.1.js</span><span style="color:#710">&quot;</span></span> <span style="color:#007">type</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">text/javascript</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span><span style="color:#070">&lt;/script&gt;</span>
+    <span style="color:#070">&lt;script</span> <span style="color:#007">src</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">/javascripts/crud.js</span><span style="color:#710">&quot;</span></span> <span style="color:#007">type</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">text/javascript</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span><span style="color:#070">&lt;/script&gt;</span>
+ 
+ 
+  <span style="color:#070">&lt;/head&gt;</span>
+  <span style="color:#070">&lt;body&gt;</span></pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    jQuery Template to display an element of the validation error array.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>    <span style="color:#070">&lt;script</span> <span style="color:#007">id</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">errorsTemplate</span><span style="color:#710">&quot;</span></span> <span style="color:#007">type</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">text/html</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>
+      <span style="color:#070">&lt;li&gt;</span>
+        <span style="color:#070">&lt;b&gt;</span><span style="color:#070">&lt;span</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">text: $data</span><span style="color:#710">&quot;</span></span><span style="color:#070">/&gt;</span><span style="color:#070">&lt;/b&gt;</span>
+      <span style="color:#070">&lt;/li&gt;</span>
+    <span style="color:#070">&lt;/script&gt;</span>
+ </pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    jQuery Template for the index view.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>    <span style="color:#070">&lt;script</span> <span style="color:#007">id</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">indexTemplate</span><span style="color:#710">&quot;</span></span> <span style="color:#007">type</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">text/html</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>
+      <span style="color:#070">&lt;tr&gt;</span></pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Data bindings for post columns.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>        <span style="color:#070">&lt;td</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">text: title</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span><span style="color:#070">&lt;/td&gt;</span>
+        <span style="color:#070">&lt;td</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">text: body</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span><span style="color:#070">&lt;/td&gt;</span></pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Click handler for actions. $data contains the object that was passed to the template.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>        <span style="color:#070">&lt;td&gt;</span>
+          <span style="color:#070">&lt;a</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">click: function() { viewModel.showAction($data) }</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>Show<span style="color:#070">&lt;/a&gt;</span>
+        <span style="color:#070">&lt;/td&gt;</span>
+        <span style="color:#070">&lt;td&gt;</span>
+          <span style="color:#070">&lt;a</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">click: function() { viewModel.editAction($data) }</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>Edit<span style="color:#070">&lt;/a&gt;</span>
+        <span style="color:#070">&lt;/td&gt;</span>
+        <span style="color:#070">&lt;td&gt;</span>
+          <span style="color:#070">&lt;a</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">click: function() { viewModel.destroyAction($data) }</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>Delete<span style="color:#070">&lt;/a&gt;</span>
+        <span style="color:#070">&lt;/td&gt;</span>
+      <span style="color:#070">&lt;/tr&gt;</span>
+    <span style="color:#070">&lt;/script&gt;</span>
+ </pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    jQuery Template for the show view.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>    <span style="color:#070">&lt;script</span> <span style="color:#007">id</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">showTemplate</span><span style="color:#710">&quot;</span></span> <span style="color:#007">type</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">text/html</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>
+      <span style="color:#070">&lt;p&gt;</span>
+        <span style="color:#070">&lt;b&gt;</span>Title<span style="color:#070">&lt;/b&gt;</span><span style="color:#070">&lt;br</span><span style="color:#070">/&gt;</span>
+        <span style="color:#070">&lt;span</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">text: title</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span><span style="color:#070">&lt;/span&gt;</span>
+      <span style="color:#070">&lt;/p&gt;</span>
+      <span style="color:#070">&lt;p&gt;</span>
+        <span style="color:#070">&lt;b&gt;</span>Body<span style="color:#070">&lt;/b&gt;</span><span style="color:#070">&lt;br</span><span style="color:#070">/&gt;</span>
+        <span style="color:#070">&lt;span</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">text: body</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span><span style="color:#070">&lt;/span&gt;</span>
+      <span style="color:#070">&lt;/p&gt;</span>
+      <span style="color:#070">&lt;p&gt;</span></pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Mimic Rails CRUD navigation.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>        <span style="color:#070">&lt;a</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">click: function() { viewModel.indexAction() }</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>Back<span style="color:#070">&lt;/a&gt;</span>
+        <span style="color:#070">&lt;a</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">click: function() { viewModel.editAction($data) }</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>Edit<span style="color:#070">&lt;/a&gt;</span>
+      <span style="color:#070">&lt;/p&gt;</span>
+    <span style="color:#070">&lt;/script&gt;</span>
+ </pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    jQuery Template for the edit view.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>    <span style="color:#070">&lt;script</span> <span style="color:#007">id</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">editTemplate</span><span style="color:#710">&quot;</span></span> <span style="color:#007">type</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">text/html</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>
+      <span style="color:#070">&lt;form</span> <span style="color:#007">id</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">form</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>
+        <span style="color:#070">&lt;div</span> <span style="color:#007">class</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">field</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>
+          <span style="color:#070">&lt;label</span> <span style="color:#007">for</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">post_title</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>Title<span style="color:#070">&lt;/label&gt;</span><span style="color:#070">&lt;br</span> <span style="color:#070">/&gt;</span>
+          <span style="color:#070">&lt;input</span> <span style="color:#007">id</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">post_title</span><span style="color:#710">&quot;</span></span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">value: title</span><span style="color:#710">&quot;</span></span> <span style="color:#070">/&gt;</span>
+ 
+        <span style="color:#070">&lt;/div&gt;</span>
+        <span style="color:#070">&lt;div</span> <span style="color:#007">class</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">field</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>
+          <span style="color:#070">&lt;label</span> <span style="color:#007">for</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">post_body</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>Body<span style="color:#070">&lt;/label&gt;</span><span style="color:#070">&lt;br</span> <span style="color:#070">/&gt;</span>
+          <span style="color:#070">&lt;input</span> <span style="color:#007">id</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">post_body</span><span style="color:#710">&quot;</span></span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">value: body</span><span style="color:#710">&quot;</span></span> <span style="color:#070">/&gt;</span>
+        <span style="color:#070">&lt;/div&gt;</span>
+      <span style="color:#070">&lt;/form&gt;</span>
+      <span style="color:#070">&lt;div&gt;</span>
+        <span style="color:#070">&lt;button</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">click: function() { viewModel.updateAction($data) }</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>Save<span style="color:#070">&lt;/button&gt;</span>
+        <span style="color:#070">&lt;a</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">click: function() { viewModel.showAction($item.selectedItem()) }</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>Cancel<span style="color:#070">&lt;/a&gt;</span>
+      <span style="color:#070">&lt;/div&gt;</span>
+    <span style="color:#070">&lt;/script&gt;</span>
+ </pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    jQuery Template for the new view.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>    <span style="color:#070">&lt;script</span> <span style="color:#007">id</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">newTemplate</span><span style="color:#710">&quot;</span></span> <span style="color:#007">type</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">text/html</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>
+      <span style="color:#070">&lt;form</span> <span style="color:#007">id</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">form</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>
+        <span style="color:#070">&lt;div</span> <span style="color:#007">class</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">field</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>
+          <span style="color:#070">&lt;label</span> <span style="color:#007">for</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">post_title</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>Title<span style="color:#070">&lt;/label&gt;</span><span style="color:#070">&lt;br</span> <span style="color:#070">/&gt;</span>
+          <span style="color:#070">&lt;input</span> <span style="color:#007">id</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">post_title</span><span style="color:#710">&quot;</span></span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">value: title</span><span style="color:#710">&quot;</span></span> <span style="color:#070">/&gt;</span>
+ 
+        <span style="color:#070">&lt;/div&gt;</span>
+        <span style="color:#070">&lt;div</span> <span style="color:#007">class</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">field</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>
+          <span style="color:#070">&lt;label</span> <span style="color:#007">for</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">post_body</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>Body<span style="color:#070">&lt;/label&gt;</span><span style="color:#070">&lt;br</span> <span style="color:#070">/&gt;</span>
+          <span style="color:#070">&lt;input</span> <span style="color:#007">id</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">post_body</span><span style="color:#710">&quot;</span></span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">value: body</span><span style="color:#710">&quot;</span></span> <span style="color:#070">/&gt;</span>
+        <span style="color:#070">&lt;/div&gt;</span>
+      <span style="color:#070">&lt;/form&gt;</span>
+      <span style="color:#070">&lt;div&gt;</span>
+        <span style="color:#070">&lt;button</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">click: function() { viewModel.createAction($data) }</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>Create<span style="color:#070">&lt;/button&gt;</span>
+        <span style="color:#070">&lt;a</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">click: function() { viewModel.indexAction() }</span><span style="color:#710">&quot;</span></span><span style="color:#070">&gt;</span>Cancel<span style="color:#070">&lt;/a&gt;</span>
+      <span style="color:#070">&lt;/div&gt;</span>
+    <span style="color:#070">&lt;/script&gt;</span>
+ 
+ </pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Call error template for validation errors.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>    <span style="color:#070">&lt;ul</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">template: {name: &quot;errorsTemplate&quot;, foreach: errors}</span><span style="color:#710">'</span></span><span style="color:#070">&gt;</span><span style="color:#070">&lt;/ul&gt;</span></pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Display flash message.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>    <span style="color:#070">&lt;span</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">text: flash</span><span style="color:#710">'</span></span><span style="color:#070">&gt;</span><span style="color:#070">&lt;/span&gt;</span></pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Display/hide index view as a function of currentPage.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>    <span style="color:#070">&lt;div</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">visible: currentPage() == &quot;index&quot;</span><span style="color:#710">'</span></span><span style="color:#070">&gt;</span>
+      <span style="color:#070">&lt;table&gt;</span>
+        <span style="color:#070">&lt;thead&gt;</span>
+          <span style="color:#070">&lt;tr&gt;</span>
+            <span style="color:#070">&lt;th&gt;</span>Title<span style="color:#070">&lt;/th&gt;</span>
+            <span style="color:#070">&lt;th&gt;</span>Body<span style="color:#070">&lt;/th&gt;</span>
+            <span style="color:#070">&lt;th&gt;</span><span style="color:#070">&lt;/th&gt;</span>
+            <span style="color:#070">&lt;th&gt;</span><span style="color:#070">&lt;/th&gt;</span>
+            <span style="color:#070">&lt;th&gt;</span><span style="color:#070">&lt;/th&gt;</span>
+          <span style="color:#070">&lt;/tr&gt;</span>
+        <span style="color:#070">&lt;/thead&gt;</span>
+        <span style="color:#070">&lt;tbody</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">template: {name: &quot;indexTemplate&quot;, foreach: items}</span><span style="color:#710">'</span></span><span style="color:#070">&gt;</span><span style="color:#070">&lt;/tbody&gt;</span>
+      <span style="color:#070">&lt;/table&gt;</span>
+      <span style="color:#070">&lt;a</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">click: function() { viewModel.newAction() }</span><span style="color:#710">'</span></span><span style="color:#070">&gt;</span>New Post<span style="color:#070">&lt;/a&gt;</span><span style="color:#070">&lt;br</span> <span style="color:#070">/&gt;</span>
+    <span style="color:#070">&lt;/div&gt;</span>
+ </pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Display/hide show view as a function of currentPage. selectedItem represents the currently selected record
+    and is part of the viewModel.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>    <span style="color:#070">&lt;div</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">visible: currentPage() == &quot;show&quot;</span><span style="color:#710">'</span></span><span style="color:#070">&gt;</span>
+      <span style="color:#070">&lt;div</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">template: {name: &quot;showTemplate&quot;, data: selectedItem}</span><span style="color:#710">'</span></span><span style="color:#070">&gt;</span><span style="color:#070">&lt;/div&gt;</span>
+    <span style="color:#070">&lt;/div&gt;</span>
+ </pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Display/hide edit view as a function of currentPage. tempItem is a copy of selectedItem.
+    tempItem is necessary because user might cancel the edit. In this case, selectedItem is untouched.
+    selectedItem is passed to the template as an template option for the cancel link (see edit template).
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>    <span style="color:#070">&lt;div</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">visible: currentPage() == &quot;edit&quot;</span><span style="color:#710">'</span></span><span style="color:#070">&gt;</span>
+      <span style="color:#070">&lt;div</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">template: {name: &quot;editTemplate&quot;, data: tempItem, templateOptions: { selectedItem: selectedItem}}</span><span style="color:#710">'</span></span><span style="color:#070">&gt;</span><span style="color:#070">&lt;/div&gt;</span>
+    <span style="color:#070">&lt;/div&gt;</span>
+ </pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Display/hide new view as a function of currentPage. Also operates on tempItem.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>    <span style="color:#070">&lt;div</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">visible: currentPage() == &quot;new&quot;</span><span style="color:#710">'</span></span><span style="color:#070">&gt;</span>
+      <span style="color:#070">&lt;div</span> <span style="color:#007">data-bind</span>=<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">template: {name: &quot;newTemplate&quot;, data: tempItem}</span><span style="color:#710">'</span></span><span style="color:#070">&gt;</span><span style="color:#070">&lt;/div&gt;</span>
+    <span style="color:#070">&lt;/div&gt;</span>
+  <span style="color:#070">&lt;/body&gt;</span>
+<span style="color:#070">&lt;/html&gt;</span></pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+</table>
+      </div>
+    
+      <div class="content">
+        <span class="file_name">public/javascripts/crud.js
+</span>
+        
+        <table cellpadding="0" cellspacing="0">
+  
+    <tr>
+      <td class='comment_block'>
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre><span style="color:#080;font-weight:bold">var</span> viewModel = {</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Rails-like flash message.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  flash: ko.observable(),</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Ensures that flash message is only displayed once.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  shownOnce: ko.observable(),</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Which view is displayed?
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  currentPage: ko.observable(),</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Errors from server-side validations.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  errors: ko.observableArray(),</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    All records (from index action).
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  items: ko.observableArray(),</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Currently selected record.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  selectedItem: ko.observable(),</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    tempItem. Copy of selectedItem in edit action. Also used in new action.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  tempItem: {
+    <span style="color:#808">id</span>: ko.observable(),
+    <span style="color:#808">title</span>: ko.observable(),
+    <span style="color:#808">body</span>: ko.observable(),
+    <span style="color:#808">updated_at</span>: ko.observable(),
+    <span style="color:#808">created_at</span>: ko.observable()
+  },
+ </pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Sets flash message. Reset shownOnce flag.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  <span style="color:#06B;font-weight:bold">setFlash</span>: <span style="color:#080;font-weight:bold">function</span>(flash) {
+    <span style="color:#963">this</span>.flash(flash);
+    <span style="color:#963">this</span>.shownOnce(<span style="color:#038;font-weight:bold">false</span>);
+  },</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Called first in all actions to ensure that flash message in only shown once.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  <span style="color:#06B;font-weight:bold">checkFlash</span>: <span style="color:#080;font-weight:bold">function</span>() {
+    <span style="color:#080;font-weight:bold">if</span> (<span style="color:#963">this</span>.shownOnce() == <span style="color:#038;font-weight:bold">true</span>) {
+      <span style="color:#963">this</span>.flash(<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="color:#710">'</span></span>);
+    }
+  },</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Resets all properties of tempItem.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  <span style="color:#06B;font-weight:bold">clearTempItem</span>: <span style="color:#080;font-weight:bold">function</span>() {
+    <span style="color:#963">this</span>.tempItem.id(<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="color:#710">'</span></span>);
+    <span style="color:#963">this</span>.tempItem.title(<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="color:#710">'</span></span>);
+    <span style="color:#963">this</span>.tempItem.body(<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="color:#710">'</span></span>);
+    <span style="color:#963">this</span>.tempItem.updated_at(<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="color:#710">'</span></span>);
+    <span style="color:#963">this</span>.tempItem.created_at(<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="color:#710">'</span></span>);
+  },</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Copies properties from selectedItem to tempItem. Used in edit action.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  <span style="color:#06B;font-weight:bold">prepareTempItem</span> : <span style="color:#080;font-weight:bold">function</span>() {
+    <span style="color:#963">this</span>.tempItem.id(ko.utils.unwrapObservable(<span style="color:#963">this</span>.selectedItem().id));
+    <span style="color:#963">this</span>.tempItem.title(ko.utils.unwrapObservable(<span style="color:#963">this</span>.selectedItem().title));
+    <span style="color:#963">this</span>.tempItem.body(ko.utils.unwrapObservable(<span style="color:#963">this</span>.selectedItem().body));
+    <span style="color:#963">this</span>.tempItem.updated_at(ko.utils.unwrapObservable(<span style="color:#963">this</span>.selectedItem().updated_at));
+    <span style="color:#963">this</span>.tempItem.created_at(ko.utils.unwrapObservable(<span style="color:#963">this</span>.selectedItem().created_at));
+  },</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Index action. Fetches all records from the server and stores them in the items array.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  <span style="color:#06B;font-weight:bold">indexAction</span>: <span style="color:#080;font-weight:bold">function</span>() {
+    <span style="color:#963">this</span>.checkFlash();
+    <span style="color:#369;font-weight:bold">$</span>.getJSON(<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">/posts.json</span><span style="color:#710">'</span></span>, <span style="color:#080;font-weight:bold">function</span>(data) {
+      viewModel.items(data);
+      viewModel.currentPage(<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">index</span><span style="color:#710">'</span></span>);
+      viewModel.shownOnce(<span style="color:#038;font-weight:bold">true</span>);
+    });
+  },</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Show action. Displays selected item.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  <span style="color:#06B;font-weight:bold">showAction</span>: <span style="color:#080;font-weight:bold">function</span>(itemToShow) {
+    <span style="color:#963">this</span>.checkFlash();
+    <span style="color:#963">this</span>.errors([]);
+    <span style="color:#963">this</span>.selectedItem(itemToShow);
+    <span style="color:#963">this</span>.currentPage(<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">show</span><span style="color:#710">'</span></span>);
+    <span style="color:#963">this</span>.shownOnce(<span style="color:#038;font-weight:bold">true</span>);
+  },</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    New action. Displays form for new record.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  <span style="color:#06B;font-weight:bold">newAction</span>: <span style="color:#080;font-weight:bold">function</span>() {
+    <span style="color:#963">this</span>.checkFlash();
+    <span style="color:#963">this</span>.currentPage(<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">new</span><span style="color:#710">'</span></span>);
+    <span style="color:#963">this</span>.clearTempItem();
+    <span style="color:#963">this</span>.shownOnce(<span style="color:#038;font-weight:bold">true</span>);
+  },</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Edit action. Displays edit form.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  <span style="color:#06B;font-weight:bold">editAction</span>: <span style="color:#080;font-weight:bold">function</span>(itemToEdit) {
+    <span style="color:#963">this</span>.checkFlash();
+    <span style="color:#963">this</span>.selectedItem(itemToEdit);
+    <span style="color:#963">this</span>.prepareTempItem();
+    <span style="color:#963">this</span>.currentPage(<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">edit</span><span style="color:#710">'</span></span>);
+    <span style="color:#963">this</span>.shownOnce(<span style="color:#038;font-weight:bold">true</span>);
+  },</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Create action, creates a new record in the Rails backend with a POST request.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  <span style="color:#06B;font-weight:bold">createAction</span>: <span style="color:#080;font-weight:bold">function</span>(itemToCreate) {
+    <span style="color:#080;font-weight:bold">var</span> json_data = ko.toJS(itemToCreate);
+    <span style="color:#369;font-weight:bold">$</span>.ajax({
+      <span style="color:#808">type</span>: <span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">POST</span><span style="color:#710">'</span></span>,
+      <span style="color:#808">url</span>: <span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">/posts.json</span><span style="color:#710">'</span></span>,
+      <span style="color:#808">data</span>: {</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Wraps properties in a "post" property, easier to handle for Rails.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>        post: json_data
+      },
+      <span style="color:#808">dataType</span>: <span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">json</span><span style="color:#710">&quot;</span></span>,
+      <span style="color:#06B;font-weight:bold">success</span>: <span style="color:#080;font-weight:bold">function</span>(createdItem) {
+        viewModel.errors([]);
+        viewModel.setFlash(<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">Post successfully created.</span><span style="color:#710">'</span></span>);
+        viewModel.clearTempItem();
+        viewModel.showAction(createdItem);
+      },
+      <span style="color:#06B;font-weight:bold">error</span>: <span style="color:#080;font-weight:bold">function</span>(msg) {
+        viewModel.errors(JSON.parse(msg.responseText));
+      }
+    });
+  },</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Update action. Updates an existing record with a PUT request.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  <span style="color:#06B;font-weight:bold">updateAction</span>: <span style="color:#080;font-weight:bold">function</span>(itemToUpdate) {
+    <span style="color:#080;font-weight:bold">var</span> json_data = ko.toJS(itemToUpdate);
+    <span style="color:#080;font-weight:bold">delete</span> json_data.id;
+    <span style="color:#080;font-weight:bold">delete</span> json_data.created_at;
+    <span style="color:#080;font-weight:bold">delete</span> json_data.updated_at;
+ 
+    <span style="color:#369;font-weight:bold">$</span>.ajax({
+      <span style="color:#808">type</span>: <span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">PUT</span><span style="color:#710">'</span></span>,
+      <span style="color:#808">url</span>: <span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">/posts/</span><span style="color:#710">'</span></span> + itemToUpdate.id() + <span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">.json</span><span style="color:#710">'</span></span>,
+      <span style="color:#808">data</span>: {
+        <span style="color:#808">post</span>: json_data
+      },
+      <span style="color:#808">dataType</span>: <span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">json</span><span style="color:#710">&quot;</span></span>,
+      <span style="color:#06B;font-weight:bold">success</span>: <span style="color:#080;font-weight:bold">function</span>(updatedItem) {
+        viewModel.errors([]);
+        viewModel.setFlash(<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">Post successfully updated.</span><span style="color:#710">'</span></span>);
+        viewModel.showAction(updatedItem);
+      },
+      <span style="color:#06B;font-weight:bold">error</span>: <span style="color:#080;font-weight:bold">function</span>(msg) {
+        viewModel.errors(JSON.parse(msg.responseText));
+      }
+    });
+  },</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Destroy action. Destroys an existing record with a DELETE request.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre>  <span style="color:#06B;font-weight:bold">destroyAction</span>: <span style="color:#080;font-weight:bold">function</span>(itemToDestroy) {
+    <span style="color:#080;font-weight:bold">if</span> (confirm(<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">Are you sure?</span><span style="color:#710">'</span></span>)) {
+      <span style="color:#369;font-weight:bold">$</span>.ajax({
+        <span style="color:#808">type</span>: <span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">DELETE</span><span style="color:#710">&quot;</span></span>,
+        <span style="color:#808">url</span>: <span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">/posts/</span><span style="color:#710">'</span></span> + itemToDestroy.id + <span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">.json</span><span style="color:#710">'</span></span>,
+        <span style="color:#808">dataType</span>: <span style="background-color:#fff0f0;color:#D20"><span style="color:#710">&quot;</span><span style="">json</span><span style="color:#710">&quot;</span></span>,
+        <span style="color:#06B;font-weight:bold">success</span>: <span style="color:#080;font-weight:bold">function</span>(){
+          viewModel.errors([]);
+          viewModel.setFlash(<span style="background-color:#fff0f0;color:#D20"><span style="color:#710">'</span><span style="">Post successfully deleted.</span><span style="color:#710">'</span></span>);
+          viewModel.indexAction();
+        },
+        <span style="color:#06B;font-weight:bold">error</span>: <span style="color:#080;font-weight:bold">function</span>(msg) {
+          viewModel.errors(JSON.parse(msg.responseText));
+        }
+      });
+    }
+  }
+};
+ </pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+    <tr>
+      <td class='comment_block'>
+        
+          
+    Set up bindings and call index action.
+  
+        
+      </td>
+      <td class='code_block'>
+        
+        
+        <div class="CodeRay">
+  <div class="code"><pre><span style="color:#369;font-weight:bold">$</span>(document).ready(<span style="color:#080;font-weight:bold">function</span>() {
+  ko.applyBindings(viewModel);
+  viewModel.indexAction();
+  viewModel.clearTempItem();
+});</pre></div>
+</div>
+
+      </td>
+    </tr>
+  
+</table>
+      </div>
+    
+  </body>
+</html>
