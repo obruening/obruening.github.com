@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Custom Theme Changer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="themes/kuler_base.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0rc2/jquery.mobile.structure-1.0rc2.min.css" /> 
+    <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script> 
+    <script src="jquery.cookie.js"></script> 
+	
+    <script>
+	  var defaultTheme = 'kuler_2';
+	  
+	  function stylesheetLink(theme) {
+	    return '<link id="theme" rel="stylesheet" href="themes/' + theme + '.css" />';
+	  }
+
+	  if ($.cookie('theme') == null) {
+	    document.writeln(stylesheetLink(defaultTheme));
+		$.cookie('theme', defaultTheme);
+	  } else {
+	    console.log(stylesheetLink($.cookie('theme')));
+	    document.writeln(stylesheetLink($.cookie('theme')));
+	  }
+    </script>
+	
+	
+    <script src="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.js"></script> 
+	
+    <script>
+	  $('#page_1').live("pageinit", function(event) {
+	  
+	    $('.theme_changer').bind('click', function(event) {
+		  $.cookie('theme', $(this).attr('id'));
+		  $('#theme').attr('href', 'themes/' + $.cookie('theme') + '.css');
+		});
+	  });
+    </script>
+  </head>
+  <body>
+    <div data-role="page" id="page_1" data-theme="a">
+        <div data-role="header" >
+            <h1>Custom Theme Changer</h1>
+        </div>
+        <div data-role="content">
+          <ul data-role="listview" data-inset="true" data-theme="a" data-divider-theme="a">
+            <li data-role="list-divider">
+              Choose Theme
+            </li>
+            <li>
+              <a class="theme_changer" id="kuler_1">Theme 1</a>
+		    </li>
+		    <li>
+		      <a class="theme_changer" id="kuler_2">Theme 2</a>
+		    </li>
+		    <li>
+		      <a class="theme_changer" id="kuler_3">Theme 3</a>
+		    </li>
+		  </ul>
+		  
+		  <h3>
+		    How does it work?
+		  </h3>
+		  <ul>
+		    <li>
+			  Create 3 themes with the ThemeRoller (A - C).
+			</li>
+		    <li>
+			  The resulting CSS file contains 3 sections for the A, B and C swatches plus a section with general styles.
+			</li>
+			<li>
+			  Copy the styles for each swatch in a separate CSS file, in this example kuler_1.css, kuler_2.css and kuler_3.css.
+			</li>
+			<li>
+			  Copy the section with the general styles in another file, in this example kuler_base.css.
+			</li>
+			<li>
+			  Edit kuler_2.css and kuler_3.css. Replace every occurance of "-b" (kuler_2.css) and "-c" (kuler_3.css) with "-a". Now all 3 files refer to swatch A.
+			</li>
+			<li>
+			  Take a look at the source code. Define your default theme in the defaultTheme variable.
+			</li>
+			<li>
+			  The theme is stored in a client cookie, make sure to add the jquery.cookie.js plugin.
+			</li>
+			<li>
+			  Make sure that all elements of your page reference data-theme 'a', don't mix in swatches from other themes, they are not available.
+			</li>
+			<li>
+			  The theme changer is flicker-free. 
+			</li>
+			<li>
+			  Have fun!
+			</li>
+		  </ul>
+		  
+        </div>
+    </div>
+  </body>
+</html>
